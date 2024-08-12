@@ -4,7 +4,10 @@ from sqlalchemy.orm import sessionmaker
 
 from app.config import settings
 
-engine = create_engine(settings.database_url, connect_args={"sslmode": "require"})
+
+engine = create_engine(
+    settings.database_url, echo=True
+)  # connect_args={"sslmode": "require"}
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -20,6 +23,15 @@ def get_db():
 
 
 def create_tables():
-    pass
-    # from app.models import user, post
-    # Base.metadata.create_all(bind=engine)
+    from app.auth.models import User
+
+    # from app.invoice.models import (
+    #     Client,
+    #     Item,
+    #     Invoice,
+    #     InvoiceItem,
+    #     Payment,
+    #     InvoicePayment,
+    # )
+
+    Base.metadata.create_all(bind=engine)
