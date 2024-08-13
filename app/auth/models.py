@@ -16,3 +16,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=datetime.now)
+    clients = relationship("Client", back_populates="owner")
+    items = relationship("Item", back_populates="owner")
+    invoices = relationship("Invoice", back_populates="owner")
+    payments = relationship("Payment", back_populates="owner")

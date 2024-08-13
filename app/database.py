@@ -24,14 +24,5 @@ def get_db():
 
 def create_tables():
     from app.auth.models import User
-
-    # from app.invoice.models import (
-    #     Client,
-    #     Item,
-    #     Invoice,
-    #     InvoiceItem,
-    #     Payment,
-    #     InvoicePayment,
-    # )
-
+    from app.invoice.models import Client, Item, Invoice, InvoiceItem, Payment
     Base.metadata.create_all(bind=engine)
