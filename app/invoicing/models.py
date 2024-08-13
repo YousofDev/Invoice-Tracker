@@ -1,4 +1,3 @@
-import enum
 from datetime import datetime
 from sqlalchemy.orm import relationship
 from sqlalchemy import (
@@ -92,14 +91,16 @@ class Invoice(Base):
 class InvoiceItem(Base):
     __tablename__ = "invoice_items"
     id = Column(Integer, primary_key=True, index=True)
-    invoice_id = Column(Integer, ForeignKey("invoices.id"))
+    invoice_id = Column(Integer, ForeignKey("invoices.id", ondelete="CASCADE"))
     item_id = Column(Integer, ForeignKey("items.id"))
     quantity = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)
     item_amount = Column(Float)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=datetime.now)
-    invoice = relationship("Invoice", back_populates="invoice_items")
+    invoice = relationship(
+        "Invoice", back_populates="invoice_items", passive_deletes=True
+    )
     item = relationship("Item", back_populates="invoice_items")
 
 
@@ -108,7 +109,7 @@ class Payment(Base):
     id = Column(Integer, primary_key=True, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
     client_id = Column(Integer, ForeignKey("clients.id"))
-    invoice_id = Column(Integer, ForeignKey("invoices.id"))
+    invoice_id = Column(Integer, ForeignKey("invoices.id", ondelete="CASCADE"))
     reference = Column(String(50), unique=True, nullable=False)
     status = Column(Enum(PaymentStatus), nullable=False)
     description = Column(String, nullable=True)
@@ -120,7 +121,7 @@ class Payment(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=datetime.now)
     owner = relationship("User", back_populates="payments")
     client = relationship("Client", back_populates="payments")
-    invoice = relationship("Invoice", back_populates="payments")
+    invoice = relationship("Invoice", back_populates="payments", passive_deletes=True)
 
     @staticmethod
     def generate_reference(context):

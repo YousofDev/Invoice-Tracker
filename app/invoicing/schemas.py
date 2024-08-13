@@ -80,41 +80,6 @@ class ItemInDB(ItemBase):
         from_attributes = True
 
 
-# Invoice Schema:
-class InvoiceBase(BaseModel):
-    status: InvoiceStatus
-    issuing_date: datetime
-    due_date: datetime
-    fully_paid_date: Optional[datetime] = None
-    total_amount: float
-    paid_amount: Optional[float] = 0
-    currency: Optional[str] = "USD"
-    is_sent: Optional[bool] = False
-    sent_times: Optional[int] = 0
-
-
-class InvoiceCreate(InvoiceBase):
-    client_id: int
-    owner_id: int
-    reference: Optional[str] = None
-
-
-class InvoiceUpdate(InvoiceBase):
-    pass
-
-
-class InvoiceInDB(InvoiceBase):
-    id: int
-    client_id: int
-    owner_id: int
-    reference: str
-    created_at: Optional[str]
-    updated_at: Optional[str]
-
-    class Config:
-        from_attributes = True
-
-
 class InvoiceItemBase(BaseModel):
     invoice_id: int
     item_id: int
@@ -135,6 +100,43 @@ class InvoiceItemInDB(InvoiceItemBase):
     id: int
     created_at: Optional[str]
     updated_at: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+# Invoice Schema:
+class InvoiceBase(BaseModel):
+    status: InvoiceStatus
+    issuing_date: datetime
+    due_date: datetime
+    fully_paid_date: Optional[datetime] = None
+    total_amount: float
+    paid_amount: Optional[float] = 0
+    currency: Optional[str] = "USD"
+    is_sent: Optional[bool] = False
+    sent_times: Optional[int] = 0
+
+
+class InvoiceCreate(InvoiceBase):
+    client_id: int
+    owner_id: int
+    reference: Optional[str] = None
+    items: list[InvoiceItemCreate]
+
+
+class InvoiceUpdate(InvoiceBase):
+    items: list[InvoiceItemUpdate]
+
+
+class InvoiceInDB(InvoiceBase):
+    id: int
+    client_id: int
+    owner_id: int
+    reference: str
+    created_at: Optional[str]
+    updated_at: Optional[str]
+    items: list[InvoiceItemInDB]
 
     class Config:
         from_attributes = True
