@@ -1,5 +1,6 @@
 import enum
 from datetime import datetime
+from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Column,
     DateTime,
@@ -13,34 +14,14 @@ from sqlalchemy import (
     Sequence,
     event,
 )
-from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.invoicing.schemas import InvoiceStatus, PaymentStatus, PaymentMethod
 
-# Create a sequence for generating the reference number
+
+client_seq = Sequence("client_seq", start=1, increment=1)
 invoice_seq = Sequence("invoice_seq", start=1, increment=1)
 payment_seq = Sequence("payment_seq", start=1, increment=1)
-client_seq = Sequence("client_seq", start=1, increment=1)
-
-
-class InvoiceStatus(enum.Enum):
-    DRAFT = "draft"
-    UNPAID = "unpaid"
-    PARTIALLY_PAID = "partially_paid"
-    PAID = "paid"
-    VOIDED = "voided"
-
-
-class PaymentStatus(enum.Enum):
-    PENDING = "pending"
-    COMPLETED = "completed"
-    FAILED = "failed"
-
-
-class PaymentMethod(enum.Enum):
-    BANK = "bank"
-    CARD = "card"
-    CASH = "cash"
 
 
 class Client(Base):
@@ -147,10 +128,15 @@ class Payment(Base):
         return f"PY{next_value}"
 
 
-# Event listener for before_insert to handle automatic generation
+@event.listens_for(Client, "before_insert")
+def before_insert_client_listener(mapper, connection, target):
+    if not target.reference:
+        target.reference = Client.generate_reference(connection)
+
+
 @event.listens_for(Invoice, "before_insert")
 def before_insert_invoice_listener(mapper, connection, target):
-    if not target.reference:  # Only generate if the reference is not manually provided
+    if not target.reference:
         target.reference = Invoice.generate_reference(connection)
 
 
@@ -158,9 +144,3 @@ def before_insert_invoice_listener(mapper, connection, target):
 def before_insert_payment_listener(mapper, connection, target):
     if not target.reference:
         target.reference = Payment.generate_reference(connection)
-
-
-@event.listens_for(Client, "before_insert")
-def before_insert_client_listener(mapper, connection, target):
-    if not target.reference:
-        target.reference = Client.generate_reference(connection)

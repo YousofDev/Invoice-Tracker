@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.auth.routers import router as auth_router
-from app.invoice.routers import router as invoice_router
+from app.invoicing.routers import router as invoice_router
 from app.database import create_tables
 
 create_tables()
