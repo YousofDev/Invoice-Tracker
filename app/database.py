@@ -6,7 +6,8 @@ from app.config import settings
 
 
 engine = create_engine(
-    settings.database_url, echo=True
+    settings.database_url,
+    echo=False,
 )  # connect_args={"sslmode": "require"}
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -24,5 +25,9 @@ def get_db():
 
 def create_tables():
     from app.auth.models import User
-    from app.invoicing.models import Client, Item, Invoice, InvoiceItem, Payment
+    from app.item.models import Item
+    from app.payment.models import Payment
+    from app.client.models import Client
+    from app.invoice.models import Invoice, InvoiceItem
+
     Base.metadata.create_all(bind=engine)

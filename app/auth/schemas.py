@@ -1,7 +1,11 @@
+from datetime import datetime
 from pydantic import BaseModel, EmailStr, constr
 from typing import List, Optional
 
-from app.invoicing.schemas import ClientInDB, ItemInDB, InvoiceInDB, PaymentInDB
+from app.client.schemas import ClientInDB
+from app.invoice.schemas import InvoiceInDB
+from app.item.schemas import ItemInDB
+from app.payment.schemas import PaymentInDB
 
 
 class UserBase(BaseModel):
@@ -22,8 +26,8 @@ class UserUpdate(UserBase):
 
 class UserInDB(UserBase):
     id: int
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
     clients: List[ClientInDB] = []
     items: List[ItemInDB] = []
     invoices: List[InvoiceInDB] = []
