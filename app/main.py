@@ -56,4 +56,4 @@ async def request_validation_exception_handler(
 
 @app.get("/")
 def home():
-    return {"response": "Invoice Tracker App"}
+    return {"message": "Invoice Tracker App"}

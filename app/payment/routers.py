@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from typing import List
 
 from app.payment.service import PaymentService
@@ -18,7 +18,9 @@ def get_payment_list(
     return service.get_payment_list(skip, limit)
 
 
-@router.post("/payments", response_model=PaymentInDB)
+@router.post(
+    "/payments", status_code=status.HTTP_201_CREATED, response_model=PaymentInDB
+)
 def create_payment(payment: PaymentCreate, service: PaymentService = Depends()):
     return service.create_payment(payment)
 

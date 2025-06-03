@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
 from app.invoice.service import InvoiceService
 from app.invoice.schemas import (
@@ -16,7 +16,7 @@ def get_invoice_list(
     return service.get_invoice_list(skip, limit)
 
 
-@router.post("/invoices", response_model=InvoiceInDB)
+@router.post("/invoices", status_code=status.HTTP_201_CREATED, response_model=InvoiceInDB)
 def create_invoice(invoice: InvoiceCreate, service: InvoiceService = Depends()):
     return service.create_invoice(invoice)
 

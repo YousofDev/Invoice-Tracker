@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from typing import List
 
 from app.item.service import ItemService
@@ -16,7 +16,7 @@ def get_item_list(skip: int = 0, limit: int = 100, service: ItemService = Depend
     return service.get_item_list(skip, limit)
 
 
-@router.post("/items", response_model=ItemInDB)
+@router.post("/items", status_code=status.HTTP_201_CREATED, response_model=ItemInDB)
 def create_item(item: ItemCreate, service: ItemService = Depends()):
     return service.create_item(item)
 

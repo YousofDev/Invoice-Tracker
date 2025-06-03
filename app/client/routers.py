@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from typing import List
 
 from app.client.service import ClientService
@@ -18,7 +18,7 @@ def get_client_list(
     return service.get_client_list(skip, limit)
 
 
-@router.post("/clients", response_model=ClientInDB)
+@router.post("/clients", status_code=status.HTTP_201_CREATED, response_model=ClientInDB)
 def create_client(client: ClientCreate, service: ClientService = Depends()):
     return service.create_client(client)
 

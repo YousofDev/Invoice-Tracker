@@ -198,11 +198,3 @@ class PaymentService:
         self.db.execute(delete(Payment).where(Payment.id == payment_id))
 
         self.db.commit()
-
-    def find_payment(self, id: int) -> Payment:
-        resource = self.db.query(Payment).filter(Payment.id == id).first()
-        if not resource:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found"
-            )
-        return resource

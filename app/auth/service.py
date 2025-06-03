@@ -1,14 +1,10 @@
-from decimal import Decimal
 from fastapi import Depends, HTTPException, status
-from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
-from typing import Dict, List, Optional
-from datetime import datetime
 
 from app.database import get_db
 from app.auth.models import User
-from app.auth.schemas import UserCreate, UserInDB, UserUpdate
-from app.utils.password_util import hash_password
+from app.auth.schemas import UserCreate, UserInDB, TokenData, Token
+from app.utils.security import hash_password, verify_password, create_access_token
 
 
 class AuthService:
@@ -39,18 +35,30 @@ class AuthService:
 
         return UserInDB.model_validate(user)
 
+    def login(self, username: str, password: str) -> Token:
+
+        user = self.find_user_by_email(username)
+
+        if not user or not verify_password(password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid username or password",
+            )
+
+        token_data = TokenData(user_id=user.id)  # type: ignore
+
+        access_token = create_access_token(token_data)
+
+        return Token(access_token=access_token, token_type="bearer")
+
     def get_user_list(self, skip: int = 0, limit: int = 100):
         return self.db.query(User).offset(skip).limit(limit).all()
 
     def get_user(self, user_id: int) -> UserInDB:
-        user = self.find_user_by_id(user_id)
-        return UserInDB.model_validate(user)
-
-    def find_user_by_id(self, user_id):
         user = self.db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        return user
+        return UserInDB.model_validate(user)
 
     def find_user_by_email(self, email: str):
         return self.db.query(User).filter(User.email == email).first()

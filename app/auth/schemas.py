@@ -1,11 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, constr
-from typing import List, Optional
-
-from app.client.schemas import ClientInDB
-from app.invoice.schemas import InvoiceInDB
-from app.item.schemas import ItemInDB
-from app.payment.schemas import PaymentInDB
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 
 class UserBase(BaseModel):
@@ -28,10 +23,21 @@ class UserInDB(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    clients: List[ClientInDB] = []
-    items: List[ItemInDB] = []
-    invoices: List[InvoiceInDB] = []
-    payments: List[PaymentInDB] = []
+
+    class Config:
+        from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+    class Config:
+        from_attributes = True
+
+
+class TokenData(BaseModel):
+    user_id: int
 
     class Config:
         from_attributes = True
